@@ -2,14 +2,17 @@
 TMPDIR=/tmp/mw-pg
 PIDFILE=$TMPDIR/.s.PGSQL.5432.lock
 start () {
-    /usr/lib/postgresql/9.5/bin/initdb -D $TMPDIR
+    initdb -D $TMPDIR
+    mkdir -p $TMPDIR/conf.d
     cat >/$TMPDIR/postgresql.conf <<EOF
     fsync = off
-    listen_addresses = ''
+    listen_addresses = 'localhost'
+    include_dir = 'conf.d'
 
     unix_socket_directories = '$TMPDIR'
 EOF
     /usr/lib/postgresql/9.5/bin/postgres -D $TMPDIR &> $TMPDIR/stdout.log &
+    postgres -D $TMPDIR &> $TMPDIR/stdout.log &
 }
 
 stop() {
